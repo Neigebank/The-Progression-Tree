@@ -6,7 +6,7 @@ addLayer("p", {
         unlocked: true,
 		points: new ExpantaNum(0),
     }},
-    color: "#4BDC13",
+    color: "#5b2623",
     requires: new ExpantaNum(10), // Can be a function that takes requirement increases into account
     resource: "prestige points", // Name of prestige currency
     baseResource: "points", // Name of resource prestige is based on
@@ -24,5 +24,13 @@ addLayer("p", {
     hotkeys: [
         {key: "p", description: "P: Reset for prestige points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
-    layerShown(){return true}
+    layerShown(){return true},
+    upgrades: {
+        11: {
+            title: "Start.",
+            description: "Startgenerating points.",
+            cost: new ExpantaNum(0),
+
+        }
+    }
 })
