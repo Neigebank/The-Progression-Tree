@@ -65,21 +65,17 @@ function buyUpg(layer, id) {
 			let name = upg.currencyInternalName
 			if (upg.currencyLocation) {
 				if (upg.currencyLocation[name].lt(cost)) return
-				upg.currencyLocation[name] = upg.currencyLocation[name].sub(cost)
 			}
 			else if (upg.currencyLayer) {
 				let lr = upg.currencyLayer
 				if (player[lr][name].lt(cost)) return
-				player[lr][name] = player[lr][name].sub(cost)
 			}
 			else {
 				if (player[name].lt(cost)) return
-				player[name] = player[name].sub(cost)
 			}
 		}
 		else {
 			if (player[layer].points.lt(cost)) return
-			player[layer].points = player[layer].points.sub(cost)
 		}
 	}
 	player[layer].upgrades.push(id);
