@@ -17,17 +17,23 @@ let VERSION = {
 }
 
 let changelog = `<h1><i>Changelog</i></h1><br><br>
+	<h3>v0.2.1</h3> <span style="opacity: 40%">December 18th 2022</span><br>
+	→ Added 2 upgrades to the rebooter layer. layer which has 4 milestones, x upgrades, etc.<br>
+	→ The upgrader buttons are bigger, to remove their varying heights.<br>
+	→ Fixed a lot of bugs.<br>
+	<i><small><span style="opacity: 60%">Endgame → ~e15 points</span></small></i>
+	<br><br><br>
 	<h3>v0.2.0</h3> <span style="opacity: 40%">December 17th 2022</span><br>
 	→ Added the rebooting layer which has 4 milestones, x upgrades, etc.<br>
 	→ Gradient-ified the branches.<br>
 	→ Fixed a lot of bugs.<br>
-	<i><small><span style="opacity: 60%">Endgame → ??? points</span></small></i>
+	<i><small><span style="opacity: 60%">Endgame → ~e15 points</span></small></i>
 	<br><br><br>
 
 	<h3>v0.1.0</h3> <span style="opacity: 40%">December 11th 2022</span><br>
 	→ Added the prestige layer and 9 upgrades. The name of this layer is subject to change.<br>
 	→ Made the game look prettier.<br>
-		<i><small><span style="opacity: 60%">Endgame → 100,000,000 points</span></small></i>
+		<i><small><span style="opacity: 60%">Endgame → ~100,000,000 points</span></small></i>
 	<br><br><br>
 
 	<h3>v0.0.0</h3> <span style="opacity: 40%">December 10th 2022</span><br>
