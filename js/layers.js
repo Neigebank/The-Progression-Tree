@@ -1,80 +1,185 @@
 addLayer("p", {
-    name: "prestige", // This is optional, only used in a few places, If absent it just uses the layer id.
-    symbol: "P", // This appears on the layer's node. Default is the id with the first letter capitalized
-    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+    name: "prestige",
+    symbol: "P",
+    position: 0,
     startData() { return {
         unlocked: true,
 		points: new ExpantaNum(0),
+        higherResets: 0
     }},
-    color: "#197029",
-    requires: new ExpantaNum(10), // Can be a function that takes requirement increases into account
-    resource: "prestige points", // Name of prestige currency
-    baseResource: "points", // Name of resource prestige is based on
-    baseAmount() {return player.points}, // Get the current amount of baseResource
-    type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: 0.5, // Prestige currency exponent
-    gainMult() { // Calculate the multiplier for main currency from bonuses
+    color: "#4c59b0",
+    requires: new ExpantaNum(10),
+    resource: "prestige points",
+    baseResource: "points",
+    baseAmount() {return player.points},
+    type: "normal",
+    exponent: 0.5,
+    gainMult() {
         mult = new ExpantaNum(1)
         if (hasUpgrade(this.layer, 13)) mult = mult.times(upgradeEffect(this.layer, 13))
+        if (hasUpgrade(this.layer, 32)) mult = mult.times(upgradeEffect(this.layer, 32))
         return mult
     },
-    gainExp() { // Calculate the exponent on main currency from bonuses
+    gainExp() {
         return new ExpantaNum(1)
     },
-    row: 0, // Row the layer is in on the        (0 is the first row)
+    doReset(resettingLayer) {
+        if (layers[resettingLayer].row > this.row) {
+            let keep = []
+            let upgKeep = []
+            if (hasMilestone("r", 0) && resettingLayer == "r") upgKeep.push(11, 12, 13)
+            if (hasMilestone("r", 1) && resettingLayer == "r") upgKeep.push(21, 22, 23)
+            if (hasMilestone("r", 2) && resettingLayer == "r") upgKeep.push(31, 32, 33)
+            layerDataReset("p", keep)
+            player[this.layer].upgrades = upgKeep
+            player[this.layer].higherResets += 1
+        }
+    },
+    row: 0,
     hotkeys: [
         {key: "p", description: "P: Reset for prestige points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return true},
     upgrades: {
         11: {
-            title: "Genesis.",
-            description() {if (hasUpgrade(this.layer, 22)) {return "Start generating 1.25 points every second."} else {return "Start generating 1 point every second."}},
+            title() {switch(player[this.layer].higherResets) {case 0: {return "Genesis"} case 1: {return "Regenesis"} case 2: {return "Reregenesis"} default: {return "Re<sup>" + player.r.resets + "</sup>genesis"}}}, // hehe
+            description() {if (hasUpgrade(this.layer, 22)) {return "Start generating 1.4 points every second."} else {return "Start generating 1 point every second."}},
             cost: new ExpantaNum(0),
         },
         12: {
-            title: "Prestige Boost.",
+            title: "Prestige Boost",
             description: "Multiply point generation based on prestige points.",
             cost: new ExpantaNum(1),
-            effect() {if (hasUpgrade(this.layer, 22)) {return ExpantaNum.sqrt(player[this.layer].points.add(1)).mul(1.25)} else {return ExpantaNum.sqrt(player[this.layer].points.add(1))}},
+            effect() {if (hasUpgrade(this.layer, 22)) {return ExpantaNum.sqrt(player[this.layer].points.add(1)).mul(1.4)} else {return ExpantaNum.sqrt(player[this.layer].points.add(1))}},
             effectDisplay() {return "×" + format(upgradeEffect(this.layer, 12))},
             unlocked() {if (hasUpgrade(this.layer, 11)) {return true} else {return false}}
         },
         13: {
-            title: "Double Synergy.",
+            title: "Double Synergy",
             description: "Boost prestige points and point generation based on points.",
             cost: new ExpantaNum(5),
-            effect() {if (hasUpgrade(this.layer, 22)) {return ExpantaNum.pow(player.points.add(1), 0.13).mul(1.25)} else {return ExpantaNum.pow(player.points.add(1), 0.13)}},
+            effect() {if (hasUpgrade(this.layer, 22)) {return ExpantaNum.pow(player.points.add(1), 0.13).mul(1.4)} else {return ExpantaNum.pow(player.points.add(1), 0.13)}},
             effectDisplay() {return "×" + format(upgradeEffect(this.layer, 13))},
             unlocked() {if (hasUpgrade(this.layer, 12)) {return true} else {return false}}
         },
         21: {
-            title: "Patience.",
+            title: "Patience",
             description: "Your reset time boosts point generation.",
             cost: new ExpantaNum(20),
-            effect() {if (hasUpgrade(this.layer, 23)) {return ExpantaNum.pow((player[this.layer].resetTime), 1/5).add(1).pow(upgradeEffect(this.layer, 23))} else {return ExpantaNum.pow((player[this.layer].resetTime), 1/5).add(1)}},
+            effect() {return ExpantaNum.pow((player[this.layer].resetTime), 1/5).add(1)},
             effectDisplay() {return "×" + format(upgradeEffect(this.layer, 21))},
             unlocked() {if (hasUpgrade(this.layer, 13)) {return true} else {return false}}
         }, 
         22: {
-            title: "Boosting Power.",
-            description: "Boost all the upgrades on the first row by ×1.25.",
-            cost: new ExpantaNum(75),
+            title: "Multi-booster",
+            description: "Boost all the upgrades on the first row by ×1.4.",
+            cost: new ExpantaNum(100),
             unlocked() {if (hasUpgrade(this.layer, 21)) {return true} else {return false}}
         },
         23: {
-            title: "Super Upgrades.",
-            description: "Your amount of upgrades boosts Patience.",
-            cost: new ExpantaNum(75),
-            effect() {return ExpantaNum.pow(player[this.layer].upgrades.length, 0.4)},
-            effectDisplay() {return "^" + format(upgradeEffect(this.layer, 23))},
+            title: "Upgrader Power",
+            description: "Your amount of upgrades boosts point generation.",
+            cost: new ExpantaNum(500),
+            effect() {return ExpantaNum.add(player[this.layer].upgrades.length, 1)},
+            effectDisplay() {return "×" + format(upgradeEffect(this.layer, 23))},
             unlocked() {if (hasUpgrade(this.layer, 22)) {return true} else {return false}}
+        },
+
+        31: {
+            title: "Narcissism",
+            description: "Points boost their own generation.",
+            cost: new ExpantaNum(7500),
+            effect() {return player.points.add(1).pow(0.1).add(1)},
+            effectDisplay() {return "×" + format(upgradeEffect(this.layer, 31))},
+            unlocked() {if (hasUpgrade(this.layer, 23)) {return true} else {return false}}
+        },
+
+        32: {
+            title: "Narcissism V2",
+            description: "Prestige points boost their own gain.",
+            cost: new ExpantaNum(30000),
+            effect() {return ExpantaNum.log10(ExpantaNum.max(player[this.layer].points, 1)).add(1)},
+            effectDisplay() {return "×" + format(upgradeEffect(this.layer, 32))},
+            unlocked() {if (hasUpgrade(this.layer, 31)) {return true} else {return false}}
+        },
+        33: {
+            title: "Layering",
+            description: "Unlock the rebooting layer.",
+            cost: new ExpantaNum(500000),
+            unlocked() {if (hasUpgrade(this.layer, 32)) {return true} else {return false}}
         }
     },
     infoboxes: {
         lore: {
             title: "Introductions.",
-            body() {return "If you're wondering how this differs from other prestige tree mods, upgrades require. They don't cost."}
+            body() {return "If you're wondering how this differs from other prestige tree mods, upgrades require. They don't cost. This game is inspired by various known incremental games."}
         }
     }
+})
+
+addLayer("r", {
+    name: "rebooters",
+    symbol: "R",
+    position: 1,
+    startData() { return {
+        unlocked: false,
+		points: new ExpantaNum(0),
+    }},
+    branches: ["p"],
+    color: "#20a181",
+    requires: new ExpantaNum(1e6),
+    resource: "rebooters",
+    baseResource: "prestige points",
+    baseAmount() {return player.p.points},
+    type: "normal",
+    exponent: 0.1,
+    gainMult() { 
+        mult = new ExpantaNum(1)
+        if (hasUpgrade(this.layer, 13)) mult = mult.times(upgradeEffect(this.layer, 13))
+        if (hasUpgrade(this.layer, 32)) mult = mult.times(upgradeEffect(this.layer, 32))
+        return mult
+    },
+    effect() {return player[this.layer].points.add(1).pow(1.5)}, 
+    effectDescription() {return "They are boosting point generation by <h2 style='color: " + tmp[this.layer].color + "; text-shadow: 0px 0px 10px'>×" + format(tmp[this.layer].effect) + "</h2>."}, // This is... sort of copied from Plague Tree...
+    gainExp() {
+        return new ExpantaNum(1)
+    },
+    layerShown() {if (hasUpgrade("p", 33)) {return true} else if (player[this.layer].unlocked) {return true} else {return false}},
+    row: 1,
+    milestones: {
+        0: {
+            requirementDescription: "3 rebooters",
+            effectDescription: "Keep the first row of prestige upgrades on reboots.",
+            done() {return player[this.layer].points.gte(3)}
+        },
+
+        1: {
+            requirementDescription: "5 rebooters",
+            effectDescription: "Keep the second row of prestige upgrades on reboots.",
+            done() {return player[this.layer].points.gte(5)},
+            unlocked() {return hasMilestone(this.layer, 0)}
+        },
+
+        2: {
+            requirementDescription: "10 rebooters",
+            effectDescription: "Keep the third row of prestige upgrades on reboots.",
+            done() {return player[this.layer].points.gte(10)},
+            unlocked() {return hasMilestone(this.layer, 1)}
+        },
+        3: {
+            requirementDescription: "25 rebooters",
+            effectDescription: "Get 100% of your prestige points gained on reset every second.<br><i><small>(last milestone, for now)</small></i>",
+            done() {return player[this.layer].points.gte(25)},
+            unlocked() {return hasMilestone(this.layer, 2)}
+        },
+    },
+    hotkeys: [
+        {key: "p", description: "P: Reset for prestige points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+    ],
+    infoboxes: {
+        lore: {
+            title: "Rebooters.",
+            body() {return "Rebooting resets the prestige layer. However, you get a boost to point gain based on your rebooters. Once you get to 1e15 points, you will unlock rebooter upgrades."}
+        }
+    },
 })

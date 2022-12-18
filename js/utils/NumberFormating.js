@@ -35,7 +35,7 @@ function format(decimal, precision = 2) { // My own system.
             return decimal.div(new ExpantaNum(10).pow(decimal.log10().floor())).toFixed(2) + "e" + decimal.log10().floor()
         }
     } else {
-        return "too big"
+        return decimal.div(new ExpantaNum(10).pow(decimal.log10().floor())).toFixed(2) + "e" + decimal.log10().floor()
     }
 }
 

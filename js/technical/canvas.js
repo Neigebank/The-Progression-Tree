@@ -24,14 +24,14 @@ function resizeCanvas() {
 
 var colors = {
 	default: {
-		1: "#ffffff",
-		2: "#bfbfbf",
-		3: "#7f7f7f",
+		1: "background-image: linear-gradient(red, yellow)",
+		2: "#bfbfbf4f",
+		3: "#7f7f7f4f",
 	},
 	aqua: {
-		1: "#bfdfff",
-		2: "#8fa7bf",
-		3: "#5f6f7f",
+		1: "#bfdfff4f",
+		2: "#8fa7bf4f",
+		3: "#5f6f7f4f",
 	},
 }
 var colors_theme
@@ -41,15 +41,14 @@ function drawTree() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	for (layer in layers){
 		if (tmp[layer].layerShown == true && tmp[layer].branches){
-			for (branch in tmp[layer].branches)
-				{
-					drawTreeBranch(layer, tmp[layer].branches[branch])
-				}
+			for (branch in tmp[layer].branches) {
+				drawTreeBranch(layer, tmp[layer].branches[branch], tmp[layer].color, tmp[tmp[layer].branches[branch]].color)
+			}
 		}
 	}
 }
 
-function drawTreeBranch(num1, data) { // taken from Antimatter Dimensions & adjusted slightly
+function drawTreeBranch(num1, data, c1, c2) { // taken from Antimatter Dimensions & adjusted slightly
 	let num2 = data
 	let color_id = 1
 
@@ -64,15 +63,20 @@ function drawTreeBranch(num1, data) { // taken from Antimatter Dimensions & adju
 	if (document.getElementById(num1) == null || document.getElementById(num2) == null)
 		return
 
+
+
 	let start = document.getElementById(num1).getBoundingClientRect();
     let end = document.getElementById(num2).getBoundingClientRect();
     let x1 = start.left + (start.width / 2) + document.body.scrollLeft;
     let y1 = start.top + (start.height / 2) + document.body.scrollTop;
     let x2 = end.left + (end.width / 2) + document.body.scrollLeft;
     let y2 = end.top + (end.height / 2) + document.body.scrollTop;
-    ctx.lineWidth = 15;
+	var grad= ctx.createLinearGradient(x1, y1, x2, y2);
+	grad.addColorStop(0.3, c1);
+	grad.addColorStop(0.7, c2);
+    ctx.lineWidth = 12;
     ctx.beginPath();
-    ctx.strokeStyle = color_id
+    ctx.strokeStyle = grad
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
     ctx.stroke();

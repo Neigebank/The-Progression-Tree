@@ -12,14 +12,26 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0",
+	num: "0.2.0",
 	name: "",
 }
 
-let changelog = `<h1>Changelog:</h1><br>
-	<h3>v0.0</h3><br>
-		- Added things.<br>
-		- Added stuff.`
+let changelog = `<h1>Changelog:</h1><br><br>
+	<h3>v0.2.0</h3> <span style="opacity: 40%">December 17th 2022</span><br>
+	→ Added the rebooting layer which has 4 milestones, x upgrades, etc.<br>
+	→ Gradient-ified the branches.<br>
+	→ Fixed a lot of bugs.<br>
+	<i><small><span style="opacity: 60%">Endgame → ??? points</span></small></i>
+	<br><br><br>
+	<h3>v0.1.0</h3> <span style="opacity: 40%">December 11th 2022</span><br>
+	→ Added the prestige layer and 9 upgrades. The name of this layer is subject to change.<br>
+	→ Made the game look prettier.<br>
+		<i><small><span style="opacity: 60%">Endgame → 100,000,000 points</span></small></i>
+	<br><br><br>
+	<h3>v0.0.0</h3> <span style="opacity: 40%">December 10th 2022</span><br>
+	→ Started creating the game.<br>
+		<i><small><span style="opacity: 60%">Endgame → What are you expecting?</span></small></i>
+	<br><br>`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -41,11 +53,14 @@ function getPointGen() {
 	if(!canGenPoints())
 		return new ExpantaNum(0)
 
-	let gain = new ExpantaNum(200031203)
+	let gain = new ExpantaNum(1)
 	if (hasUpgrade("p", 12)) gain = gain.times(upgradeEffect("p", 12))
 	if (hasUpgrade("p", 13)) gain = gain.times(upgradeEffect("p", 13))
 	if (hasUpgrade("p", 21)) gain = gain.times(upgradeEffect("p", 21))
-	if (hasUpgrade("p", 22)) gain = gain.times(1.25)
+	if (hasUpgrade("p", 22)) gain = gain.times(1.4)
+	if (hasUpgrade("p", 23)) gain = gain.times(upgradeEffect("p", 23))
+	if (hasUpgrade("p", 31)) gain = gain.times(upgradeEffect("p", 31))
+	gain = gain.times(tmp.r.effect)
 	return gain
 }
 
