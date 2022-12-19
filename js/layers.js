@@ -18,6 +18,7 @@ addLayer("p", {
         mult = new ExpantaNum(1)
         if (hasUpgrade(this.layer, 13)) mult = mult.times(upgradeEffect(this.layer, 13))
         if (hasUpgrade(this.layer, 32)) mult = mult.times(upgradeEffect(this.layer, 32))
+        if (hasUpgrade("r", 12)) mult = mult.times(upgradeEffect("r", 12))
         return mult
     },
     gainExp() {
@@ -84,7 +85,7 @@ addLayer("p", {
             title: "Upgrader Power",
             description: "Your amount of prestige upgrades boosts point generation.",
             cost: new ExpantaNum(500),
-            effect() {if (hasUpgrade('r', 11)) {return ExpantaNum.add(player[this.layer].upgrades.length, 1).pow(2)} else {return ExpantaNum.add(player[this.layer].upgrades.length, 1)}},
+            effect() {if (hasUpgrade('r', 11)) {return ExpantaNum.add(player[this.layer].upgrades.length, 1).pow(upgradeEffect("r", 11))} else {return ExpantaNum.add(player[this.layer].upgrades.length, 1)}},
             effectDisplay() {return "×" + format(upgradeEffect(this.layer, 23))},
             unlocked() {if (hasUpgrade(this.layer, 22)) {return true} else {return false}}
         },
@@ -182,15 +183,17 @@ addLayer("r", {
             title: "Upgrader Squarer",
             description: "Raise <i>Upgrader Power</i>'s <small>(6th prestige upgrade)</small> effect based on rebooter upgrades.",
             cost: new ExpantaNum(100),
-            effect() {return ExpantaNum.pow(player[this.layer].upgrades, 0.5)},
-            effectDisplay() {return "x" + format(upgradeEffect("r", 11))},
+            effect() {return ExpantaNum.pow(player[this.layer].upgrades.length * 2, 0.5).add(1)},
+            effectDisplay() {return "↑" + format(upgradeEffect("r", 11))},
             unlocked() {if (hasMilestone("r", 3)) {return true} else {return false}},
         },
         12: {
             title: "Rebooter Synergy",
             description: "The square root of your rebooter effect affects prestige points.",
             cost: new ExpantaNum(250),
-            
+            effect() {return tmp[this.layer].effect.sqrt()},
+            effectDisplay() {return "×" + format(upgradeEffect(this.layer, 12))},
+            unlocked() {if (hasUpgrade("r", 11)) {return true} else {return false}},
         }
     },
     hotkeys: [
