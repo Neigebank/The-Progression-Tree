@@ -53,7 +53,7 @@ function getStartPoints(){
 
 // Determines if it should show points/sec
 function canGenPoints(){
-	if (hasUpgrade("p", "11")) {return true} else {return false}
+	if (hasUpgrade("p", 11)) {return true} else {return false}
 }
 
 // Calculate points/sec!
@@ -68,6 +68,7 @@ function getPointGen() {
 	if (hasUpgrade("p", 22)) gain = gain.times(1.4)
 	if (hasUpgrade("p", 23)) gain = gain.times(upgradeEffect("p", 23))
 	if (hasUpgrade("p", 31)) gain = gain.times(upgradeEffect("p", 31))
+	if (player.pw.unlocked) gain = gain.times(tmp.pw.powEff)
 	gain = gain.times(tmp.r.effect)
 	return gain
 }

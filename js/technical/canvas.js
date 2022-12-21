@@ -72,8 +72,8 @@ function drawTreeBranch(num1, data, c1, c2) { // taken from Antimatter Dimension
     let x2 = end.left + (end.width / 2) + document.body.scrollLeft;
     let y2 = end.top + (end.height / 2) + document.body.scrollTop;
 	var grad= ctx.createLinearGradient(x1, y1, x2, y2);
-	grad.addColorStop(0.3, c1);
-	grad.addColorStop(0.7, c2);
+	grad.addColorStop(0.25, c1);
+	grad.addColorStop(0.75, c2);
     ctx.lineWidth = 12;
     ctx.beginPath();
     ctx.strokeStyle = grad

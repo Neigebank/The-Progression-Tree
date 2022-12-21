@@ -19,6 +19,7 @@ addLayer("p", {
         if (hasUpgrade(this.layer, 13)) mult = mult.times(upgradeEffect(this.layer, 13))
         if (hasUpgrade(this.layer, 32)) mult = mult.times(upgradeEffect(this.layer, 32))
         if (hasUpgrade("r", 12)) mult = mult.times(upgradeEffect("r", 12))
+        if (player.pw.unlocked) mult = mult.times(tmp.pw.powEff)
         return mult
     },
     gainExp() {
@@ -53,8 +54,9 @@ addLayer("p", {
             description: "Multiply point generation based on prestige points.",
             cost: new ExpantaNum(1),
             effect() {
-                let eff = player[this.layer].points.add(1).sqrt()
-                return softcap((hasUpgrade(this.layer, 22)) ? eff.mul(1.4) : eff, hasUpgrade(this.layer, 22) ? new ExpantaNum("1.4e6") : new ExpantaNum("1e6"), 0.1)
+                var eff = player[this.layer].points.add(1).sqrt()
+                var sc1 = (hasUpgrade(this.layer, 22)) ? new ExpantaNum("1.4e6") : new ExpantaNum("1e6")
+                return softcap((hasUpgrade(this.layer, 22)) ? eff.mul(1.4) : eff, sc1, 0.1)
             },
             effectDisplay() {return "×" + format(upgradeEffect(this.layer, 12))},
             unlocked() {if (hasUpgrade(this.layer, 11)) {return true} else {return false}}
@@ -149,6 +151,13 @@ addLayer("r", {
     gainExp() {
         return new ExpantaNum(1)
     },
+    doReset(rl) {
+        if (rl == "pw") {
+            upg = player.r.upgrades
+            layerDataReset("r", [])
+
+        }
+    },
     layerShown() {if (hasUpgrade("p", 33)) {return true} else if (player[this.layer].unlocked) {return true} else {return false}},
     row: 1,
     milestones: {
@@ -183,17 +192,23 @@ addLayer("r", {
             title: "Upgrader Squarer",
             description: "Raise <i>Upgrader Power</i>'s <small>(6th prestige upgrade)</small> effect based on rebooter upgrades.",
             cost: new ExpantaNum(100),
-            effect() {return ExpantaNum.pow(player[this.layer].upgrades.length * 2, 0.5).add(1)},
+            effect() {return player[this.layer].upgrades.length * Math.PI/2 + 1},
             effectDisplay() {return "↑" + format(upgradeEffect("r", 11))},
             unlocked() {if (hasMilestone("r", 3)) {return true} else {return false}},
         },
         12: {
             title: "Rebooter Synergy",
             description: "The square root of your rebooter effect affects prestige points.",
-            cost: new ExpantaNum(250),
+            cost: new ExpantaNum(400),
             effect() {return tmp[this.layer].effect.sqrt()},
             effectDisplay() {return "×" + format(upgradeEffect(this.layer, 12))},
             unlocked() {if (hasUpgrade("r", 11)) {return true} else {return false}},
+        },
+        13: {
+            title: "Powering Up",
+            description: "Unlock the progression power layer.",
+            cost: new ExpantaNum(3000),
+            unlocked() {if (hasUpgrade("r", 12)) {return true} else {return false}},
         }
     },
     hotkeys: [
@@ -207,6 +222,52 @@ addLayer("r", {
                 if (!hasMilestone("r", 3)) {mainstr += "<br><br>Your goal now is to reach 25 rebooters and unlock rebooter upgrades."} else {mainstr += "<br><br>Rebooter upgrades require rebooters <i>(obviously)</i> and provide some good boosts."}
                 return mainstr
             }
+        }
+    },
+})
+
+addLayer("pw", {
+    name: "progression power",
+    symbol: "PW",
+    position: 2,
+    startData() { return {
+        unlocked: false,
+		points: new ExpantaNum(0),
+        power: new ExpantaNum(0),
+    }},
+    tabFormat: [["infobox", "lore"], "main-display", "prestige-button", "blank", ["display-text", function() {return "You have " + format(player.pw.power) + " power, which is multiplying both prestige points<br>gain and point generation by <h3>×" + format(tmp.pw.powEff) + "</h3>.<br><span style='opacity: 45%; font-style: italic'>(x<sup>0.333</sup> + 1)</span>"}]],
+    branches: ["p"],
+    color: "#ba5141",
+    requires: new ExpantaNum(3000),
+    resource: "progress points",
+    baseResource: "rebooters",
+    baseAmount() {return player.r.points},
+    type: "normal",
+    exponent: 0.5,
+    effect() {return player.pw.points},
+    effectDescription() {return "<br>They are generating <h3>" + formatWhole(player.pw.points) + " </h3>power every second."},
+    powEff() {
+        return player.pw.power.pow(1/3).add(1)
+    },
+    gainMult() { 
+        mult = new ExpantaNum(1)
+        return mult
+    },
+    update(diff) {
+        if (player.pw.unlocked) player.pw.power = player.pw.power.add(tmp.pw.effect.times(diff))
+    },
+    gainExp() {
+        return new ExpantaNum(1)
+    },
+    layerShown() {if (hasUpgrade("r", 13) || player.pw.unlocked) {return true} else {return false}},
+    row: 1,
+    hotkeys: [
+        {key: "p", description: "P: Reset for prestige points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+    ],
+    infoboxes: {
+        lore: {
+            title: "Progress points.",
+            body: "Progress points produce progressive power at a rate that is equivalent to its amount. <br><br>Progressive power boosts both prestige points and point generation at a significantly reduced rate.",
         }
     },
 })

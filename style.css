@@ -231,6 +231,11 @@ h1, h2, h3, b, input {
 	text-shadow: 0 0 7px var(--color);
 }
 
+sup {
+	font-size: 75%;
+	line-height: 0px;
+}
+
 .reset {
 	height: 120px;
 	width: 180px;
